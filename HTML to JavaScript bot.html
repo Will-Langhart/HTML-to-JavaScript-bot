@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Friz AI GPT-Themed Code Transmogrifier</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/themes/prism.min.css" rel="stylesheet">
+    <style>
+        /* GPT-Themed animated keyframe and colors */
+        @keyframes gptAnimation {
+            0% {
+                background-color: #373E49;
+                color: #E0E0E0;
+            }
+            50% {
+                background-color: #E0E0E0;
+                color: #373E49;
+            }
+            100% {
+                background-color: #373E49;
+                color: #E0E0E0;
+            }
+        }
+
+        body {
+            animation: gptAnimation 10s infinite;
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+
+        .ui-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid #ccc;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .macbook-frame {
+            position: relative;
+            width: 60vw;
+            height: 40vw;
+            border: 15px solid black;
+            border-top-width: 40px;
+            border-bottom-width: 40px;
+            border-radius: 40px;
+            background-color: #aaa;
+            box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+            margin-top: 50px;
+        }
+
+        .macbook-content {
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: #f5f5f5;
+            padding: 20px;
+        }
+
+        .button-section {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background-color: #373E49;
+            color: #E0E0E0;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #2C323D;
+        }
+
+        /* Additional styles to enhance UI */
+        /* [Further styles integrated here] */
+    </style>
+</head>
+
+<body>
+
+    <div id="AI-suggestions">AI Suggestions will appear here.</div>
+
+    <div class="ui-container">
+        <!-- User Input Fields -->
+        <div class="input-section">
+            <label for="codeInput">Enter Command:</label>
+            <input type="text" id="codeInput" placeholder="Type your command here..." onkeyup="generateSnippet()">
+            <select id="codeType">
+                <option value="html">HTML</option>
+                <option value="js">JavaScript</option>
+            </select>
+        </div>
+
+        <!-- Buttons for Compilation and Downloads -->
+        <div class="button-section">
+            <button onclick="compileCode()">Compile</button>
+            <button id="downloadBtn" disabled>Download All</button>
+            <button onclick="resetCode()">Reset</button>
+            <button id="darkModeToggle">Toggle Dark Mode</button>
+        </div>
+
+        <!-- MacBook Frame -->
+        <div class="macbook-frame">
+            <div class="macbook-content">
+
+                <!-- Code Input/Output Areas -->
+                <div class="code-section">
+                    <label for="htmlInput">HTML Input:</label>
+                    <textarea class="code-input" id="htmlInput" placeholder="Enter HTML" rows="10"></textarea>
+                    <button onclick="downloadCode('html')">Download HTML</button>
+                    <br>
+
+                    <label for="jsInput">JavaScript Input:</label>
+                    <textarea class="code-input" id="jsInput" placeholder="Enter JavaScript" rows="10"></textarea>
+                    <button onclick="downloadCode('js')">Download JS</button>
+                </div>
+
+                <!-- Dynamic Webpage Output -->
+                <div class="output-section">
+                    <label>Live Output:</label>
+                    <iframe id="dynamicWebpage" style="width:100%; height:50vh;"></iframe>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/prism.min.js"></script>
+    <script>
+          // [Previous JavaScript functions remain here]
+
+    function autoInferCodeSnippet(userInput) {
+        let inferredCode = '';
+        if (userInput.includes('button')) {
+            inferredCode += '<button>Click Me</button>';
+        }
+        if (userInput.includes('header')) {
+            inferredCode += '<header>Header Content</header>';
+        }
+        if (userInput.includes('animate')) {
+            inferredCode += `
+                function animateElement(elementId) {
+                    let element = document.getElementById(elementId);
+                    element.style.transition = 'all 0.5s';
+                    element.style.transform = 'scale(1.1)';
+                }
+            `;
+        }
+        // More conditions can be added based on common use-cases or specific needs
+        return inferredCode;
+    }
+
+    document.getElementById('codeInput').addEventListener('keyup', function() {
+        let command = this.value;
+        let inferredCode = autoInferCodeSnippet(command);
+        if (inferredCode) {
+            document.getElementById('htmlInput').textContent = inferredCode;
+        }
+    });
+
+    // Rest of the functions for handling speech recognition, code compilation, downloading, etc.
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const recognition = new SpeechRecognition();
+
+    recognition.onresult = function(event) {
+        const transcript = event.results[0][0].transcript;
+        const codeType = document.getElementById("codeType").value;
+        document.getElementById(`${codeType}Input`).value = transcript;
+        aiSuggestions(codeType, transcript);
+        compileCode();
+    };
+
+    function aiSuggestions(type, code) {
+        let suggestions = "AI Suggestions: ";
+        if (type === 'html' && !code.includes('<head>')) {
+            suggestions += "Consider adding a <head> section. ";
+        }
+        if (type === 'js' && !code.includes('function')) {
+            suggestions += "You might want to include a function for better organization.";
+        }
+        document.getElementById('AI-suggestions').innerHTML = suggestions;
+    }
+
+    function compileCode() {
+        const html = document.getElementById('htmlInput').value;
+        const js = document.getElementById('jsInput').value;
+        const iframe = document.getElementById('dynamicWebpage');
+        const doc = iframe.contentWindow.document;
+        doc.open();
+        doc.write(`<html><body>${html}<script>${js}<\/script></body></html>`);
+        doc.close();
+        document.getElementById('downloadBtn').disabled = false;
+    }
+
+    function resetCode() {
+        ['htmlInput', 'jsInput'].forEach(id => {
+            document.getElementById(id).value = '';
+        });
+        document.getElementById('dynamicWebpage').src = 'about:blank';
+    }
+
+    function downloadCode(type) {
+        const content = document.getElementById(`${type}Input`).value;
+        const blob = new Blob([content], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `code.${type}`;
+        a.click();
+        URL.revokeObjectURL(url);
+    }
+
+    // Dark Mode Toggle
+    const darkModeToggle = document.getElementById('darkModeToggle');
+    let darkMode = false;
+    darkModeToggle.addEventListener('click', function() {
+        darkMode = !darkMode;
+        if (darkMode) {
+            document.body.classList.add('dark-mode');
+        } else {
+            document.body.classList.remove('dark-mode');
+        }
+    });
+
+    </script>
+</body>
+
+</html>
